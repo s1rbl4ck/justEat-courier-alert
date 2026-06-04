@@ -25,7 +25,8 @@ Environment variables
 
 - TARGET_URL — URL to monitor (must include ?city=slug)
 - TARGET_VEHICLES — comma-separated list of vehicle labels to alert on (substring match)
-- TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID — credentials to send Telegram alerts
+- TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID — credentials to send Telegram alerts (single chat)
+- TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_IDS — send alerts to multiple chats (comma-separated IDs)
 - CHECK_INTERVAL_MS — polling interval in milliseconds
 
 How it works

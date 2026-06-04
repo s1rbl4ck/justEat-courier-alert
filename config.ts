@@ -11,4 +11,14 @@ export const TARGET_VEHICLES = (process.env.TARGET_VEHICLES || 'Driver Bike,Comp
   .filter(Boolean);
 
 export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
-export const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
+
+// Supports either TELEGRAM_CHAT_IDS (comma-separated) or single TELEGRAM_CHAT_ID.
+export const TELEGRAM_CHAT_IDS = (
+  process.env.TELEGRAM_CHAT_IDS || process.env.TELEGRAM_CHAT_ID || ''
+)
+  .split(',')
+  .map((id) => id.trim())
+  .filter(Boolean);
+
+// Backward-compatible single value (first ID if many are configured).
+export const TELEGRAM_CHAT_ID = TELEGRAM_CHAT_IDS[0] || '';
