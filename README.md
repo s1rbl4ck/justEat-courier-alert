@@ -19,7 +19,7 @@ Quick start
 
    bun run start
    # or
-   npx tsx server.ts
+   bun server.ts
 
 Environment variables
 

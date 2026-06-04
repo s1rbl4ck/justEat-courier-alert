@@ -17,4 +17,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Start the TypeScript server directly with Bun.
-CMD ["bun", "run", "start"]
+CMD ["bun", "server.ts"]
