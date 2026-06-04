@@ -8,6 +8,9 @@ COPY package.json bun.lock ./
 # Install dependencies using Bun to match the repository lockfile.
 RUN bun install --frozen-lockfile
 
+# Download the Camoufox browser binary needed at runtime.
+RUN bunx camoufox fetch
+
 # Copy the application source.
 COPY . .
 
