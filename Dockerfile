@@ -1,17 +1,14 @@
-FROM node:20-alpine
+FROM oven/bun:1
 
 WORKDIR /usr/src/app
 
-# Install build tools (some npm packages need them)
-RUN apk add --no-cache python3 make g++
+# Copy lockfile and manifests first for better layer caching.
+COPY package.json bun.lock ./
 
-# Copy package manifests first for better caching
-COPY package*.json ./
+# Install dependencies using Bun to match the repository lockfile.
+RUN bun install --frozen-lockfile
 
-# Install all dependencies (including dev deps which may include tsx)
-RUN npm ci --silent
-
-# Copy app sources
+# Copy the application source.
 COPY . .
 
 ENV NODE_ENV=production
@@ -19,5 +16,5 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-# Run the app using tsx (installed in node_modules)
-CMD ["npx", "tsx", "server.ts"]
+# Start the TypeScript server directly with Bun.
+CMD ["bun", "run", "start"]
