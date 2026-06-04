@@ -1,14 +1,29 @@
-import { Camoufox } from 'camoufox';
 import { sendTelegramAlert } from '../helpers/telegram.helper';
 import { extractAssignedObject } from '../lib/parser';
 import { TARGET_URL, INTERVAL_MS, TARGET_VEHICLES } from '../config';
 import { recordIteration } from './stats';
 
+async function fetchHtmlWithTimeout(url: string, timeoutMs: number): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} while fetching target page`);
+    }
+
+    return await response.text();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function checkJobPostings(): Promise<void> {
-  let browser: any;
   try {
     console.log(
-      `[${new Date().toLocaleTimeString()}] Launching stealth browser to check: ${TARGET_URL}`,
+      `[${new Date().toLocaleTimeString()}] Fetching page HTML to check: ${TARGET_URL}`,
     );
 
     const parsedUrl = new URL(TARGET_URL);
@@ -21,12 +36,7 @@ export async function checkJobPostings(): Promise<void> {
       return;
     }
 
-    browser = await Camoufox({ headless: true, main_world_eval: true });
-    const page = await browser.newPage();
-    await page.goto(TARGET_URL, { waitUntil: 'networkidle' });
-
-    const html = await page.content();
-    await browser.close();
+    const html = await fetchHtmlWithTimeout(TARGET_URL, 30000);
 
     const country = extractAssignedObject(html, 'country');
     const language = extractAssignedObject(html, 'language');
@@ -111,7 +121,6 @@ export async function checkJobPostings(): Promise<void> {
   } catch (error) {
     console.error('❌ Stealth scrape loop failed:', error);
     recordIteration({ success: false, error: String(error) });
-    if (browser) await browser.close();
   }
 }
 
